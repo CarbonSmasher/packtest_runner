@@ -1,0 +1,11 @@
+name: 'PackTest Runner'
+description: 'Runs datapack tests using PackTest'
+inputs:
+  packs:  # id of input
+    description: 'Packs to test'
+    required: true
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.packs }}
