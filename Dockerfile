@@ -1,4 +1,4 @@
-FROM alpine:3.10
+FROM rust:1.73.0
 
 WORKDIR /github/workspace
 
