@@ -1,4 +1,4 @@
-/target
-/test_pack.zip
-/test_pack
+/runner/target
+/runner/test_pack.zip
+/runner/test_pack
 /packtest_launch

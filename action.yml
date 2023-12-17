@@ -1,7 +1,7 @@
 name: 'PackTest Runner'
 description: 'Runs datapack tests using PackTest'
 inputs:
-  packs:  # id of input
+  packs:
     description: 'Packs to test'
     required: true
 runs:

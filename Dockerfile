@@ -1,5 +1,8 @@
 FROM alpine:3.10
 
-COPY target/debug/packtest_runner /run
+WORKDIR /github/workspace
 
-ENTRYPOINT ["/run"]
+COPY runner /packtest_runner
+COPY run_action.sh /packtest_runner.sh
+
+ENTRYPOINT ["/packtest_runner.sh"]
