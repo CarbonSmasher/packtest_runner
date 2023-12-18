@@ -40,7 +40,12 @@ async fn main() -> ExitCode {
 async fn run() -> anyhow::Result<bool> {
     let cli = Cli::parse();
 
-    let version = "1.20.4";
+    let version = if let Some(version) = cli.version {
+        version
+    } else {
+        "1.20.4".into()
+    };
+
     let mut o = output::Simple(output::MessageLevel::Trace);
     if cli.github {
         println!("::group::Install test server::")
@@ -48,7 +53,7 @@ async fn run() -> anyhow::Result<bool> {
     let core_config = ConfigBuilder::new().disable_hardlinks(true);
     let mut core = MCVMCore::with_config(core_config.build()).context("Failed to create core")?;
     let version_info = core
-        .get_version_info(version.into())
+        .get_version_info(version.clone())
         .await
         .context("Failed to get version info")?;
 
@@ -163,6 +168,9 @@ struct Cli {
 
     /// Whether to output special messages for use in GitHub Actions
     github: bool,
+
+    /// Minecraft version to use. Defaults to 1.20.4
+    version: Option<String>,
 
     /// The packs to test. They must all be datapacks with the mcmeta
     /// in the root directory

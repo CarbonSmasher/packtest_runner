@@ -4,8 +4,12 @@ inputs:
   packs:
     description: 'Paths to packs to test, separated by commas'
     required: true
+  version:
+    description: 'Minecraft version to use. Defaults to 1.20.4'
+    required: false
+    default: '1.20.4'
 runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
-    - ${{ inputs.packs }}
+    - ${{ inputs.packs }} ${{ inputs.version }}
