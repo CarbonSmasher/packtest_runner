@@ -9,7 +9,7 @@ edition = "2021"
 anyhow = "1.0.75"
 clap = { version = "4.4.11", features = ["derive"] }
 mcvm_core = "0.1.1"
-mcvm_mods = "0.1.1"
+mcvm_mods = "0.1.2"
 mcvm_shared = "0.10.0"
 reqwest = { version = "0.11.22", default_features = false, features = [
 	"json",

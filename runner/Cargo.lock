@@ -956,9 +956,9 @@ dependencies = [
 
 [[package]]
 name = "mcvm_mods"
-version = "0.1.1"
+version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "28f024cafbc83a7b07d114395a1c0b776166a406d61a71bb89aa5b256fee4ebb"
+checksum = "337f7b1d463c9ece21fb04c5545609e0558a0fa2859841a47bdded481f7668bb"
 dependencies = [
  "anyhow",
  "bytes",
