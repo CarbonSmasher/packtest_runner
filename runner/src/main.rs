@@ -3,6 +3,7 @@ use std::process::ExitCode;
 
 use anyhow::Context;
 use clap::Parser;
+use copy_dir::copy_dir;
 use mcvm_core::launch::LaunchConfiguration;
 use mcvm_core::net::download;
 use mcvm_core::util::versions::MinecraftVersion;
@@ -105,11 +106,21 @@ async fn run() -> anyhow::Result<bool> {
     // Move the datapacks into the world
     let datapack_dir = inst_dir.join("world").join("datapacks");
     std::fs::create_dir_all(&datapack_dir).context("Failed to create world datapacks directory")?;
-    for pack in &cli.packs {
+    
+    let packs = if cli.comma_separate {
+        cli.packs
+            .first()
+            .context("Missing first pack to split")?
+            .split(',')
+            .map(|x| x.to_string())
+            .collect::<Vec<_>>()
+    } else {
+        cli.packs
+    };
+    for pack in packs {
         let in_path = PathBuf::from(pack);
         let out_path = datapack_dir.join(in_path.file_name().context("Missing filename")?);
-
-        std::fs::copy(in_path, out_path).context("Failed to copy pack into world")?;
+        copy_dir(in_path, out_path).context("Failed to copy pack into world")?;
     }
 
     // Create the server properties
@@ -131,7 +142,11 @@ async fn run() -> anyhow::Result<bool> {
 
 #[derive(Parser)]
 struct Cli {
-    /// The packs to test. They must all be zip files with the mcmeta
+    /// If set, then parses the first pack specified as a list of packs separated by commas
+    #[arg(long)]
+    comma_separate: bool,
+
+    /// The packs to test. They must all be datapacks with the mcmeta
     /// in the root directory
     packs: Vec<String>,
 }

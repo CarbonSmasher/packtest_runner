@@ -2,7 +2,7 @@ name: 'PackTest Runner'
 description: 'Runs datapack tests using PackTest'
 inputs:
   packs:
-    description: 'Packs to test'
+    description: 'Paths to packs to test, separated by commas'
     required: true
 runs:
   using: 'docker'
