@@ -106,7 +106,7 @@ async fn run() -> anyhow::Result<bool> {
     // Move the datapacks into the world
     let datapack_dir = inst_dir.join("world").join("datapacks");
     std::fs::create_dir_all(&datapack_dir).context("Failed to create world datapacks directory")?;
-    
+
     let packs = if cli.comma_separate {
         cli.packs
             .first()
@@ -118,9 +118,10 @@ async fn run() -> anyhow::Result<bool> {
         cli.packs
     };
     for pack in packs {
-        let in_path = PathBuf::from(pack);
+        println!("Copying pack {pack}");
+        let in_path = PathBuf::from(pack.clone());
         let out_path = datapack_dir.join(in_path.file_name().context("Missing filename")?);
-        copy_dir(in_path, out_path).context("Failed to copy pack into world")?;
+        copy_dir(in_path, out_path).context(format!("Failed to copy pack {pack} into world"))?;
     }
 
     // Create the server properties
