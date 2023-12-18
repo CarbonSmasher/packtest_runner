@@ -42,6 +42,9 @@ async fn run() -> anyhow::Result<bool> {
 
     let version = "1.20.4";
     let mut o = output::Simple(output::MessageLevel::Trace);
+    if cli.github {
+        println!("::group::Install test server::")
+    }
     let core_config = ConfigBuilder::new().disable_hardlinks(true);
     let mut core = MCVMCore::with_config(core_config.build()).context("Failed to create core")?;
     let version_info = core
@@ -78,6 +81,7 @@ async fn run() -> anyhow::Result<bool> {
         main_class: Some(main_class),
         additional_libs: classpath.get_paths(),
     };
+
     let mut instance = vers
         .get_instance(inst_config, &mut o)
         .await
@@ -128,10 +132,20 @@ async fn run() -> anyhow::Result<bool> {
     std::fs::write(inst_dir.join("server.properties"), SERVER_PROPERTIES)
         .context("Failed to write server properties")?;
 
+    if cli.github {
+        println!("::endgroup::")
+    }
+
+    if cli.github {
+        println!("::group::Launch server and run tests::")
+    }
     instance
         .launch(&mut o)
         .await
         .context("Failed to launch instance")?;
+    if cli.github {
+        println!("::endgroup::")
+    }
 
     // Check for test failure
     let log = std::fs::read_to_string(inst_dir.join("logs/latest.log"))
@@ -146,6 +160,9 @@ struct Cli {
     /// If set, then parses the first pack specified as a list of packs separated by commas
     #[arg(long)]
     comma_separate: bool,
+
+    /// Whether to output special messages for use in GitHub Actions
+    github: bool,
 
     /// The packs to test. They must all be datapacks with the mcmeta
     /// in the root directory
