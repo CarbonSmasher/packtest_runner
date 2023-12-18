@@ -1,6 +1,6 @@
 #!/bin/sh
 
 ls
-cd packtest_runner
-cargo build
-cargo run -- "$1"
+ls /
+cd /packtest_runner && cargo build
+/packtest_runner/target/debug/packtest_runner "$1"
