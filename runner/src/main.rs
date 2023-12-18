@@ -72,7 +72,7 @@ async fn run() -> anyhow::Result<bool> {
         .await
         .context("Failed to create version")?;
 
-    let inst_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("packtest_launch");
+    let inst_dir = PathBuf::from("./packtest_launch");
     let mut launch_config = LaunchConfiguration::new();
     launch_config.jvm_args = vec!["-Dpacktest.auto".into()];
     let inst_config = InstanceConfiguration {
