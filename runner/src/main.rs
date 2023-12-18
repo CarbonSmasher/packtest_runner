@@ -6,7 +6,7 @@ use clap::Parser;
 use mcvm_core::launch::LaunchConfiguration;
 use mcvm_core::net::download;
 use mcvm_core::util::versions::MinecraftVersion;
-use mcvm_core::{InstanceConfiguration, InstanceKind, MCVMCore};
+use mcvm_core::{ConfigBuilder, InstanceConfiguration, InstanceKind, MCVMCore};
 use mcvm_mods::fabric_quilt;
 use mcvm_shared::{output, Side};
 
@@ -38,7 +38,8 @@ async fn run() -> anyhow::Result<bool> {
 
     let version = "1.20.4";
     let mut o = output::Simple(output::MessageLevel::Trace);
-    let mut core = MCVMCore::new().context("Failed to create core")?;
+    let core_config = ConfigBuilder::new().disable_hardlinks(true);
+    let mut core = MCVMCore::with_config(core_config.build()).context("Failed to create core")?;
     let version_info = core
         .get_version_info(version.into())
         .await
