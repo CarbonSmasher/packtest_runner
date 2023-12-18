@@ -21,6 +21,9 @@ online-mode=false
 broadcast-rcon-to-ops=true
 enable-rcon=false
 rcon.password=packtest
+level-type=minecraft\\:flat
+snooper-enabled=false
+generate-structures=false
 ";
 
 #[tokio::main]
