@@ -12,7 +12,7 @@ use mcvm_mods::fabric_quilt;
 use mcvm_shared::{output, Side};
 
 const PACKTEST_URL: &str =
-    "https://github.com/misode/packtest/releases/download/v1.0.0-beta.2/packtest-1.0.0-beta.2.jar";
+    "https://github.com/misode/packtest/releases/download/v1.0.0-beta4/packtest-1.0.0-beta4.jar";
 const FABRIC_API_URL: &str =
     "https://cdn.modrinth.com/data/P7dR8mSH/versions/JQ07mKWY/fabric-api-0.91.3%2B1.20.4.jar";
 
