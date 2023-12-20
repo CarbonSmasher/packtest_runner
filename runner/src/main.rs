@@ -167,9 +167,11 @@ struct Cli {
     comma_separate: bool,
 
     /// Whether to output special messages for use in GitHub Actions
+    #[arg(long)]
     github: bool,
 
     /// Minecraft version to use. Defaults to 1.20.4
+    #[arg(short, long)]
     version: Option<String>,
 
     /// The packs to test. They must all be datapacks with the mcmeta
