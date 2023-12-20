@@ -57,6 +57,14 @@ async fn run() -> anyhow::Result<bool> {
         .await
         .context("Failed to get version info")?;
 
+    let stupid = download::text(
+        "https://meta.fabricmc.net/v2/versions/loader/1.20.4",
+        core.get_client(),
+    )
+    .await
+    .context("Failed to do stupid thing")?;
+    dbg!(&stupid);
+
     let (classpath, main_class) = fabric_quilt::install_from_core(
         &mut core,
         &version_info,
