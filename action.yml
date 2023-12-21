@@ -17,4 +17,6 @@ runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
-    - ${{ inputs.packs }} ${{ inputs.minecraft-version }} ${{inputs.packtest-url}}
+    - ${{ inputs.packs }}
+    - ${{ inputs.minecraft-version }}
+    - ${{ inputs.packtest-url }}
