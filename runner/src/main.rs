@@ -11,8 +11,6 @@ use mcvm_core::{ConfigBuilder, InstanceConfiguration, InstanceKind, MCVMCore};
 use mcvm_mods::fabric_quilt;
 use mcvm_shared::{output, Side};
 
-const PACKTEST_URL: &str =
-    "https://github.com/misode/packtest/releases/download/v1.0.0-beta4/packtest-1.0.0-beta4.jar";
 const FABRIC_API_URL: &str =
     "https://cdn.modrinth.com/data/P7dR8mSH/versions/JQ07mKWY/fabric-api-0.91.3%2B1.20.4.jar";
 
@@ -40,10 +38,16 @@ async fn main() -> ExitCode {
 async fn run() -> anyhow::Result<bool> {
     let cli = Cli::parse();
 
-    let version = if let Some(version) = cli.version {
-        version
+    let minecraft_version = if let Some(minecraft_version) = cli.minecraft_version {
+        minecraft_version
     } else {
         "1.20.4".into()
+    };
+
+    let packtest_url = if let Some(packtest_url) = cli.packtest_url {
+        packtest_url
+    } else {
+        "https://github.com/misode/packtest/releases/download/v1.0.0-beta4/packtest-1.0.0-beta4.jar".into()
     };
 
     let mut o = output::Simple(output::MessageLevel::Trace);
@@ -53,17 +57,9 @@ async fn run() -> anyhow::Result<bool> {
     let core_config = ConfigBuilder::new().disable_hardlinks(true);
     let mut core = MCVMCore::with_config(core_config.build()).context("Failed to create core")?;
     let version_info = core
-        .get_version_info(version.clone())
+        .get_version_info(minecraft_version.clone())
         .await
-        .context("Failed to get version info")?;
-
-    let stupid = download::text(
-        "https://meta.fabricmc.net/v2/versions/loader/1.20.4",
-        core.get_client(),
-    )
-    .await
-    .context("Failed to do stupid thing")?;
-    dbg!(&stupid);
+        .context("Failed to get Minecraft version info")?;
 
     let (classpath, main_class) = fabric_quilt::install_from_core(
         &mut core,
@@ -76,11 +72,11 @@ async fn run() -> anyhow::Result<bool> {
     .context("Failed to install Fabric/Quilt")?;
 
     let mut vers = core
-        .get_version(&MinecraftVersion::Version(version.into()), &mut o)
+        .get_version(&MinecraftVersion::Version(minecraft_version.into()), &mut o)
         .await
-        .context("Failed to create version")?;
+        .context("Failed to create Minecraft version")?;
 
-    let inst_dir = PathBuf::from("./packtest_launch");
+    let inst_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("packtest_launch");
     let mut launch_config = LaunchConfiguration::new();
     launch_config.jvm_args = vec!["-Dpacktest.auto".into()];
     let inst_config = InstanceConfiguration {
@@ -106,14 +102,14 @@ async fn run() -> anyhow::Result<bool> {
     }
     // Download the mods
     download::file(
-        FABRIC_API_URL,
+        packtest_url,
         &mods_dir.join("packtest.jar"),
         &reqwest::Client::new(),
     )
     .await
     .context("Failed to download Packtest mod")?;
     download::file(
-        PACKTEST_URL,
+        FABRIC_API_URL,
         &mods_dir.join("fabric_api.jar"),
         &reqwest::Client::new(),
     )
@@ -180,9 +176,13 @@ struct Cli {
 
     /// Minecraft version to use. Defaults to 1.20.4
     #[arg(short, long)]
-    version: Option<String>,
+    minecraft_version: Option<String>,
 
     /// The packs to test. They must all be datapacks with the mcmeta
     /// in the root directory
     packs: Vec<String>,
+
+    /// packtest version to use. Defaults to URL for v1.0.0-beta4
+    #[arg(short, long)]
+    packtest_url: Option<String>,
 }

@@ -7,8 +7,9 @@ This is a simple tool to help with running the [PackTest](https://github.com/mis
 `packtest_runner [OPTIONS...] <PACK1> [PACK2] [PACK3] ...`
 
 #### Options
- - `--version`: The Minecraft version to use. PackTest only supports 1.19.4, and this is the default.
+ - `--minecraft-version`: The Minecraft version to use. PackTest only supports 1.20.4, and this is the default.
  - `--comma-separate`: If set, will read the packs from the first argument specified, and split it by commas into multiple packs. Do not add spaces between the packs.
+ - `--packtest-url`: The URL to use when downloading the PackTest jar.
  - `--github`: Shows extra messages in the output for GitHub actions to use.
 
 ### GitHub Actions

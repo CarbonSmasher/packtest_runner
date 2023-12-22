@@ -5,12 +5,18 @@ inputs:
   packs:
     description: 'Paths to packs to test, separated by commas'
     required: true
-  version:
+  minecraft-version:
     description: 'Minecraft version to use. Defaults to 1.20.4'
     required: false
     default: '1.20.4'
+  packtest-url:
+    description: 'packtest url to download from. Defaults to `https://github.com/misode/packtest/releases/download/v1.0.0-beta4/packtest-1.0.0-beta4.jar`'
+    required: false
+    default: 'https://github.com/misode/packtest/releases/download/v1.0.0-beta4/packtest-1.0.0-beta4.jar'
 runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
-    - ${{ inputs.packs }} ${{ inputs.version }}
+    - ${{ inputs.packs }}
+    - ${{ inputs.minecraft-version }}
+    - ${{ inputs.packtest-url }}
