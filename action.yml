@@ -1,6 +1,9 @@
 name: 'PackTest Runner'
 description: 'Runs datapack tests using PackTest'
-icon: 'check'
+author: CarbonSmasher
+branding:
+  icon: 'check'
+  color: 'green'
 inputs:
   packs:
     description: 'Paths to packs to test, separated by commas'
