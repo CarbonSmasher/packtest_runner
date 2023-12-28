@@ -7,10 +7,11 @@ This is a simple tool to help with running the [PackTest](https://github.com/mis
 `packtest_runner [OPTIONS...] <PACK1> [PACK2] [PACK3] ...`
 
 #### Options
+ - Packs: One or more packs to test. They will be copied into the datapacks folder of the server on startup. You can specify glob patterns if you want.
  - `--minecraft-version`: The Minecraft version to use. PackTest only supports 1.20.4, and this is the default.
- - `--comma-separate`: If set, will read the packs from the first argument specified, and split it by commas into multiple packs. Do not add spaces between the packs.
  - `--packtest-url`: The URL to use when downloading the PackTest jar.
  - `--github`: Shows extra messages in the output for GitHub actions to use.
+ - `--comma-separate`: If set, will read the packs from the first argument specified, and split it by commas into multiple packs. Do not add spaces between the packs. You should never need to use this except for CI pipelines.
 
 ### GitHub Actions
 You can use this repository as a GitHub action step to test your datapack in your CI/CD pipeline.

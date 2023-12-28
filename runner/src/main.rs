@@ -4,6 +4,7 @@ use std::process::ExitCode;
 use anyhow::Context;
 use clap::Parser;
 use copy_dir::copy_dir;
+use glob::glob;
 use mcvm_core::launch::LaunchConfiguration;
 use mcvm_core::net::download;
 use mcvm_core::util::versions::MinecraftVersion;
@@ -47,7 +48,8 @@ async fn run() -> anyhow::Result<bool> {
     let packtest_url = if let Some(packtest_url) = cli.packtest_url {
         packtest_url
     } else {
-        "https://github.com/misode/packtest/releases/download/v1.0.0-beta4/packtest-1.0.0-beta4.jar".into()
+        "https://github.com/misode/packtest/releases/download/v1.0.0-beta4/packtest-1.0.0-beta4.jar"
+            .into()
     };
 
     let mut o = output::Simple(output::MessageLevel::Trace);
@@ -130,11 +132,19 @@ async fn run() -> anyhow::Result<bool> {
     } else {
         cli.packs
     };
-    for pack in packs {
-        println!("Copying pack {pack}");
-        let in_path = PathBuf::from(pack.clone());
-        let out_path = datapack_dir.join(in_path.file_name().context("Missing filename")?);
-        copy_dir(in_path, out_path).context(format!("Failed to copy pack {pack} into world"))?;
+    for pack_pattern in packs {
+        for pack in glob(&pack_pattern).context(format!(
+            "Failed to parse glob pattern for pattern {pack_pattern}"
+        ))? {
+            let pack = pack?;
+            println!("Copying pack {}", pack.to_string_lossy());
+            let in_path = PathBuf::from(pack.clone());
+            let out_path = datapack_dir.join(in_path.file_name().context("Missing filename")?);
+            copy_dir(in_path, out_path).context(format!(
+                "Failed to copy pack {} into world",
+                pack.to_string_lossy()
+            ))?;
+        }
     }
 
     // Create the server properties
