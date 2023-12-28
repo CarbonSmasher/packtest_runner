@@ -177,7 +177,9 @@ async fn run() -> anyhow::Result<bool> {
     // Check for test failure
     let log = std::fs::read_to_string(inst_dir.join("logs/latest.log"))
         .context("Failed to open log file")?;
-    let failed = log.contains("tests failed");
+    let failed = log.contains("tests failed")
+        || log.contains("Failed to load test")
+        || log.contains("All 0 required tests");
 
     Ok(failed)
 }
