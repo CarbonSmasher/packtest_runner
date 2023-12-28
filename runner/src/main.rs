@@ -12,9 +12,6 @@ use mcvm_core::{ConfigBuilder, InstanceConfiguration, InstanceKind, MCVMCore};
 use mcvm_mods::fabric_quilt;
 use mcvm_shared::{output, Side};
 
-const FABRIC_API_URL: &str =
-    "https://cdn.modrinth.com/data/P7dR8mSH/versions/JQ07mKWY/fabric-api-0.91.3%2B1.20.4.jar";
-
 const SERVER_PROPERTIES: &str = "
 rcon.port=25575
 online-mode=false
@@ -37,7 +34,7 @@ async fn main() -> ExitCode {
 }
 
 async fn run() -> anyhow::Result<bool> {
-    let cli = Cli::parse();
+    let mut cli = Cli::parse();
 
     let minecraft_version = if let Some(minecraft_version) = cli.minecraft_version {
         minecraft_version
@@ -45,10 +42,21 @@ async fn run() -> anyhow::Result<bool> {
         "1.20.4".into()
     };
 
+    cli.packtest_url = cli.packtest_url.filter(|x| x != "latest");
     let packtest_url = if let Some(packtest_url) = cli.packtest_url {
         packtest_url
     } else {
-        "https://github.com/misode/packtest/releases/download/v1.0.0-beta4/packtest-1.0.0-beta4.jar"
+        get_packtest_url(&minecraft_version)
+            .context("No PackTest available for this Minecraft version")?
+            .into()
+    };
+
+    cli.fabric_api_url = cli.fabric_api_url.filter(|x| x != "latest");
+    let fabric_api_url = if let Some(fabric_api_url) = cli.fabric_api_url {
+        fabric_api_url
+    } else {
+        get_fabric_api_url(&minecraft_version)
+            .context("No Fabric API available for this Minecraft version")?
             .into()
     };
 
@@ -111,7 +119,7 @@ async fn run() -> anyhow::Result<bool> {
     .await
     .context("Failed to download Packtest mod")?;
     download::file(
-        FABRIC_API_URL,
+        fabric_api_url,
         &mods_dir.join("fabric_api.jar"),
         &reqwest::Client::new(),
     )
@@ -174,25 +182,43 @@ async fn run() -> anyhow::Result<bool> {
     Ok(failed)
 }
 
+fn get_packtest_url(version: &str) -> Option<&'static str> {
+    match version {
+        "1.20.4" => Some(
+            "https://github.com/misode/packtest/releases/download/v1.3/packtest-1.3-mc1.20.4.jar",
+        ),
+        _ => None,
+    }
+}
+
+fn get_fabric_api_url(version: &str) -> Option<&'static str> {
+    match version {
+        "1.20.4" => Some("https://cdn.modrinth.com/data/P7dR8mSH/versions/JQ07mKWY/fabric-api-0.91.3%2B1.20.4.jar"),
+        _ => None,
+    }
+}
+
 #[derive(Parser)]
 struct Cli {
     /// If set, then parses the first pack specified as a list of packs separated by commas
     #[arg(long)]
     comma_separate: bool,
-
     /// Whether to output special messages for use in GitHub Actions
     #[arg(long)]
     github: bool,
-
-    /// Minecraft version to use. Defaults to 1.20.4
+    /// Minecraft version to use. Defaults to 1.20.4. Will determine
+    /// the PackTest and Fabric API URLs to use unless one is overridden
     #[arg(short, long)]
     minecraft_version: Option<String>,
-
+    /// URL to the PackTest mod to use. Defaults to URL for the latest version
+    /// for the specified Minecraft version
+    #[arg(long)]
+    packtest_url: Option<String>,
+    /// URL to the Fabric API mod to use. Defaults to URL for the latest version
+    /// for the specified Minecraft version
+    #[arg(long)]
+    fabric_api_url: Option<String>,
     /// The packs to test. They must all be datapacks with the mcmeta
     /// in the root directory
     packs: Vec<String>,
-
-    /// packtest version to use. Defaults to URL for v1.0.0-beta4
-    #[arg(short, long)]
-    packtest_url: Option<String>,
 }

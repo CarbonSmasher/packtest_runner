@@ -10,9 +10,13 @@ inputs:
     required: false
     default: '1.20.4'
   packtest-url:
-    description: 'packtest url to download from. Defaults to `https://github.com/misode/packtest/releases/download/v1.0.0-beta4/packtest-1.0.0-beta4.jar`'
+    description: 'URL to the PackTest mod to use. Defaults to URL for the latest version for the specified Minecraft version'
     required: false
-    default: 'https://github.com/misode/packtest/releases/download/v1.0.0-beta4/packtest-1.0.0-beta4.jar'
+    default: 'latest'
+  fabric-api-url:
+    description: 'URL to the Fabric API mod to use. Defaults to URL for the latest version for the specified Minecraft version'
+    required: false
+    default: 'latest'
 runs:
   using: 'docker'
   image: 'Dockerfile'
@@ -20,3 +24,4 @@ runs:
     - ${{ inputs.packs }}
     - ${{ inputs.minecraft-version }}
     - ${{ inputs.packtest-url }}
+    - ${{ inputs.fabric-api-url }}
