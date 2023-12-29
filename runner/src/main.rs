@@ -3,6 +3,7 @@ use std::process::ExitCode;
 
 use anyhow::Context;
 use clap::Parser;
+use color_print::cprintln;
 use copy_dir::copy_dir;
 use glob::glob;
 use mcvm_core::launch::LaunchConfiguration;
@@ -166,22 +167,51 @@ async fn run() -> anyhow::Result<bool> {
     if cli.github {
         println!("::group::Launch server and run tests::")
     }
-    instance
-        .launch(&mut o)
+    let handle = instance
+        .launch_with_handle(&mut o)
         .await
         .context("Failed to launch instance")?;
     if cli.github {
         println!("::endgroup::")
     }
 
+    let mut process = handle.get_process();
+    let status = process.wait().context("Failed to await process")?;
+
     // Check for test failure
+    if cli.github {
+        println!("::group::Get result::")
+    }
+    if !status.success() {
+        print_fail_message("Exit code was non-zero");
+        return Ok(true);
+    }
+
     let log = std::fs::read_to_string(inst_dir.join("logs/latest.log"))
         .context("Failed to open log file")?;
-    let failed = log.contains("tests failed")
-        || log.contains("Failed to load test")
-        || log.contains("All 0 required tests");
+    if log.contains("required tests failed") {
+        print_fail_message("Required tests failed");
+        return Ok(true);
+    }
+    if log.contains("Failed to load test") {
+        print_fail_message("A test failed to load");
+        return Ok(true);
+    }
+    if log.contains("All 0 required tests") {
+        print_fail_message("No tests were found");
+        return Ok(true);
+    }
 
-    Ok(failed)
+    cprintln!("<g>Test run successful :D");
+    if cli.github {
+        println!("::endgroup::")
+    }
+
+    Ok(false)
+}
+
+fn print_fail_message(msg: &str) {
+    cprintln!("<r>Tests failed because:\n  {msg}");
 }
 
 fn get_packtest_url(version: &str) -> Option<&'static str> {
