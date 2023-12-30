@@ -31,23 +31,22 @@ runs:
         key: packtest_runner_executable_${{ env.ACTION_REF }}
       env:
         ACTION_REF: ${{ github.action_ref }}
+    - uses: actions/checkout@v1
     - name: Build and run
       if: steps.cache-executable.outputs.cache-hit != 'true'
-      using: 'docker'
-      image: 'Dockerfile'
-      args:
-        - build
-        - ${{ inputs.packs }}
-        - ${{ inputs.minecraft-version }}
-        - ${{ inputs.packtest-url }}
-        - ${{ inputs.fabric-api-url }}
+      uses: ./run.yml
+      with:
+        - build: build
+        - packs: ${{ inputs.packs }}
+        - minecraft-version: ${{ inputs.minecraft-version }}
+        - packtest-url: ${{ inputs.packtest-url }}
+        - fabric-api-url: ${{ inputs.fabric-api-url }}
     - name: Run without building
       if: steps.cache-executable.outputs.cache-hit == 'true'
-      using: 'docker'
-      image: 'Dockerfile'
-      args:
-        - nobuild
-        - ${{ inputs.packs }}
-        - ${{ inputs.minecraft-version }}
-        - ${{ inputs.packtest-url }}
-        - ${{ inputs.fabric-api-url }}
+      uses: ./run.yml
+      with:
+        - build: nobuild
+        - packs: ${{ inputs.packs }}
+        - minecraft-version: ${{ inputs.minecraft-version }}
+        - packtest-url: ${{ inputs.packtest-url }}
+        - fabric-api-url: ${{ inputs.fabric-api-url }}

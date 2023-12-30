@@ -1,0 +1,28 @@
+name: 'PackTest Runner'
+inputs:
+  build:
+    required: true
+  packs:
+    description: 'Paths to packs to test, separated by commas'
+    required: true
+  minecraft-version:
+    description: 'Minecraft version to use. Defaults to 1.20.4'
+    required: false
+    default: '1.20.4'
+  packtest-url:
+    description: 'URL to the PackTest mod to use. Defaults to URL for the latest version for the specified Minecraft version'
+    required: false
+    default: 'latest'
+  fabric-api-url:
+    description: 'URL to the Fabric API mod to use. Defaults to URL for the latest version for the specified Minecraft version'
+    required: false
+    default: 'latest'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.build }}
+    - ${{ inputs.packs }}
+    - ${{ inputs.minecraft-version }}
+    - ${{ inputs.packtest-url }}
+    - ${{ inputs.fabric-api-url }}
