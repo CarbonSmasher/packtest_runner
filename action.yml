@@ -21,10 +21,33 @@ inputs:
     required: false
     default: 'latest'
 runs:
-  using: 'docker'
-  image: 'Dockerfile'
-  args:
-    - ${{ inputs.packs }}
-    - ${{ inputs.minecraft-version }}
-    - ${{ inputs.packtest-url }}
-    - ${{ inputs.fabric-api-url }}
+  using: 'composite'
+  steps:
+    - name: Cache executable
+      id: cache-executable
+      uses: actions/cache@v3
+      with:
+        path: /packtest_runner/target/debug/packtest_runner
+        key: packtest_runner_executable_${{ env.ACTION_REF }}
+      env:
+        ACTION_REF: ${{ github.action_ref }}
+    - name: Build and run
+      if: steps.cache-executable.outputs.cache-hit != 'true'
+      using: 'docker'
+      image: 'Dockerfile'
+      args:
+        - build
+        - ${{ inputs.packs }}
+        - ${{ inputs.minecraft-version }}
+        - ${{ inputs.packtest-url }}
+        - ${{ inputs.fabric-api-url }}
+    - name: Run without building
+      if: steps.cache-executable.outputs.cache-hit == 'true'
+      using: 'docker'
+      image: 'Dockerfile'
+      args:
+        - nobuild
+        - ${{ inputs.packs }}
+        - ${{ inputs.minecraft-version }}
+        - ${{ inputs.packtest-url }}
+        - ${{ inputs.fabric-api-url }}
