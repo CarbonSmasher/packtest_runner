@@ -36,17 +36,17 @@ runs:
       if: steps.cache-executable.outputs.cache-hit != 'true'
       uses: ./run.yml
       with:
-        - build: build
-        - packs: ${{ inputs.packs }}
-        - minecraft-version: ${{ inputs.minecraft-version }}
-        - packtest-url: ${{ inputs.packtest-url }}
-        - fabric-api-url: ${{ inputs.fabric-api-url }}
+        build: build
+        packs: ${{ inputs.packs }}
+        minecraft-version: ${{ inputs.minecraft-version }}
+        packtest-url: ${{ inputs.packtest-url }}
+        fabric-api-url: ${{ inputs.fabric-api-url }}
     - name: Run without building
       if: steps.cache-executable.outputs.cache-hit == 'true'
       uses: ./run.yml
       with:
-        - build: nobuild
-        - packs: ${{ inputs.packs }}
-        - minecraft-version: ${{ inputs.minecraft-version }}
-        - packtest-url: ${{ inputs.packtest-url }}
-        - fabric-api-url: ${{ inputs.fabric-api-url }}
+        build: nobuild
+        packs: ${{ inputs.packs }}
+        minecraft-version: ${{ inputs.minecraft-version }}
+        packtest-url: ${{ inputs.packtest-url }}
+        fabric-api-url: ${{ inputs.fabric-api-url }}
